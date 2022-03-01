@@ -1,0 +1,54 @@
+# 각 속성에 대한 설명은 아래 블로그 참고
+# https://velog.io/@2dh2wdk/%EC%8A%A4%ED%94%84%EB%A7%81%EB%B6%80%ED%8A%B8%EC%97%90-log4j2-%EC%84%A4%EC%A0%95
+
+Configutation:
+  name: Default
+  status: warn
+
+Properties:
+  Property:
+    name: log-path
+    value: "logs"
+
+Appenders:
+  Console:
+    name: Console_Appender
+    target: SYSTEM_OUT
+    PatternLayout:
+      pattern: "[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t][%F] %c{1} - %msg%n"
+  File:
+    name: File_Appender
+    fileName: ${log-path}/logfile.log
+    PatternLayout:
+      pattern: "[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t][%F] %c{1} - %msg%n"
+  RollingFile:
+    - name: RollingFile_Appender
+      fileName: ${log-path}/rollingfile.log
+      filePattern: "${log-path}/archive/rollingfile.log_%d{yyyy-MM-dd}.gz"
+      PatternLayout:
+        pattern: "[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t][%F] %c{1} - %msg%n"
+      Policies:
+        TimeBasedTriggeringPolicy:
+          Interval: 1
+          modulate: true
+      DefaultRollOverStrategy:
+        Delete:
+          basePath: "${log-path}/archive"
+          maxDepth: "1"
+          IfAccumulatedFileCount:
+            exceeds: 31
+Loggers:
+  Root:
+    level: info
+    AppenderRef:
+      - ref: Console_Appender
+      - ref: File_Appender
+      - ref: RollingFile_Appender
+  Logger:
+    - name: 적용할 패키지
+      additivity: false
+      level: info
+      AppenderRef:
+        - ref: Console_Appender
+        - ref: File_Appender
+        - ref: RollingFile_Appender
